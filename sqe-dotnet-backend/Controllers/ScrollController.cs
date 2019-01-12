@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SQE.Backend.DataAccess;
 using SQE.Backend.DTOs;
 
 namespace sqe_dotnet_backend.Controllers
@@ -12,10 +13,25 @@ namespace sqe_dotnet_backend.Controllers
     [ApiController]
     public class ScrollController : ControllerBase
     {
-        [HttpGet("all")] // api/scroll/all
-        public async Task<ActionResult<IEnumerable<Scroll>>> ListAllScrolls()
+        private IScrollRepository _repo;
+        public ScrollController(IScrollRepository scrollRepo)
         {
-            return new List<Scroll>();
+            this._repo = scrollRepo;
+        }
+
+        [HttpGet("all")] // api/scroll/all
+        public async Task<IEnumerable<Scroll>> ListAllScrolls()
+        {
+            var scrolls = await _repo.ListScrolls();
+
+            return scrolls.Select(poco => new Scroll
+            {
+                name = poco.Name,
+                URLs = poco.ThumbnailURLs,
+                scrollVersionIds = poco.ScrollVersionIds,
+                defaultScrollVersionId = poco.DefaultScrollVersionId,
+                numImageFragments = poco.ThumbnailURLs.Count
+            });
         }
 
         [HttpGet("versions/my")] // api/scroll/versions/all - return all of my scroll versions
