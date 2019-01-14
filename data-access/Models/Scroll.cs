@@ -12,31 +12,32 @@ namespace SQE.Backend.DataAccess.Models
         public List<int> ScrollVersionIds { get; set; }
     }
 
-    public class RawUser
+    public class User
     {
         public string Name { get; set; }
         public int Id { get; set; }
     }
 
+    public class Permission
+    {
+        public bool CanWrite { get; set; }
+        public bool CanLock { get; set; }
+    }
+
+    public class ShareInfo
+    {
+        public User User { get; set; }
+        public Permission Permission { get; set; }
+    }
+
     public class ScrollVersion
     {
         public string Name { get; set; }
-        public string Id { get; set; }
-        public List<int> scroll_version_ids;
-        public List<string> ThumbnailUrls;
-        // public User Owner;
-    }
-
-    internal class RawScrollVersion
-    {
-        // Taken from the query in line 1258 of scollery-cgi.pl
-        public string name { get; set; }
-        public int scroll_version_group_id { get; set; }
-        public string owner { get; set; }
-        public string shared { get; set; }
-        // Ignore number_of_versions - it's just the number of elements in scroll_version_ids
-        public string scroll_version_ids { get; set; }
-        public string thumbnails { get; set; }
-        // Ignore image_fragments - it's just number of elements in thumbnails
+        public int Id { get; set; }
+        public List<string> ThumbnailUrls { get; set; }
+        public User Owner { get; set; }
+        public Permission Permissions { get; set; }
+        public List<ShareInfo> Sharing { get; set; }
+        public bool Locked { get; set; }
     }
 }
