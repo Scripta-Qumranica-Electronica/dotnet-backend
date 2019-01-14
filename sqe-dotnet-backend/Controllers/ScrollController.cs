@@ -27,7 +27,7 @@ namespace sqe_dotnet_backend.Controllers
             var result = scrolls.Select(poco => new Scroll
             {
                 name = poco.Name,
-                URLs = poco.ThumbnailURLs,
+                thumbnailUrls = poco.ThumbnailURLs,
                 scrollVersionIds = poco.ScrollVersionIds,
                 defaultScrollVersionId = poco.DefaultScrollVersionId,
                 numImageFragments = poco.ThumbnailURLs.Count
