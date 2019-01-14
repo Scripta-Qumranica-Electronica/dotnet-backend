@@ -6,7 +6,7 @@ namespace SQE.Backend.DTOs
     public class Scroll
     {
         public string name { get; set; }
-        public List<string> URLs { get; set; }
+        public List<string> thumbnailUrls { get; set; }
         public List<int> scrollVersionIds { get; set; }
         public int defaultScrollVersionId { get; set; }
         public int numImageFragments;
@@ -34,7 +34,6 @@ namespace SQE.Backend.DTOs
     {
         public int id { get; set; }
         public string name { get; set; }
-        public int versionId { get; set; }
         public User owner { get; set; }
         public Permission ownerPermission { get; set; }
         public List<string> thumbnailUrls { get; set; }
