@@ -20,11 +20,11 @@ namespace sqe_dotnet_backend.Controllers
         }
 
         [HttpGet("all")] // api/scroll/all
-        public async Task<IEnumerable<Scroll>> ListAllScrolls()
+        public async Task<ListResult<Scroll>> ListAllScrolls()
         {
             var scrolls = await _repo.ListScrolls();
 
-            return scrolls.Select(poco => new Scroll
+            var result = scrolls.Select(poco => new Scroll
             {
                 name = poco.Name,
                 URLs = poco.ThumbnailURLs,
@@ -32,6 +32,8 @@ namespace sqe_dotnet_backend.Controllers
                 defaultScrollVersionId = poco.DefaultScrollVersionId,
                 numImageFragments = poco.ThumbnailURLs.Count
             });
+
+            return new ListResult<Scroll>(result);
         }
 
         [HttpGet("versions/my")] // api/scroll/versions/all - return all of my scroll versions

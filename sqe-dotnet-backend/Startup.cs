@@ -40,9 +40,9 @@ namespace sqe_dotnet_backend
             else
             {
                 app.UseHsts();
+                app.UseHttpsRedirection();
             }
 
-            app.UseHttpsRedirection();
             app.UseMvc();
         }
     }

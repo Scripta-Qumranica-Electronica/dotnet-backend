@@ -1,4 +1,4 @@
-﻿using SQE.Backend.DataAccess.POCOs;
+﻿using SQE.Backend.DataAccess.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
+using SQE.Backend.Access.RawModels;
 
 namespace SQE.Backend.DataAccess
 {
@@ -44,8 +45,8 @@ GROUP BY scroll_data.scroll_id
 ";
             using (var connection = OpenConnection())
             {
-                var results = await connection.QueryAsync<RawScroll>(sql);
-                return results.Select(raw => new Scroll(raw));
+                var results = await connection.QueryAsync<ListScrollQueryResponse>(sql);
+                return results.Select(raw => raw.CreateScroll());
             }
         }
     }
