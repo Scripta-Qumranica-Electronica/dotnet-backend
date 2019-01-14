@@ -36,8 +36,10 @@ namespace SQE.Backend.DataAccess.Models
         public int Id { get; set; }
         public List<string> ThumbnailUrls { get; set; }
         public User Owner { get; set; }
-        public Permission Permissions { get; set; }
+        public Permission Permission { get; set; }
         public List<ShareInfo> Sharing { get; set; }
-        public bool Locked { get; set; }
+        public bool? Locked { get; set; }
+        public int? NumOfArtefacts { get; set; }
+        public int? NumOfColsFrags { get; set; }
     }
 }
