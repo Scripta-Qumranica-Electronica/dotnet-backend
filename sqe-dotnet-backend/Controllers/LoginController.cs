@@ -35,9 +35,11 @@ namespace sqe_dotnet_backend.Controllers
 
         [AllowAnonymous]
         [HttpGet("check")] // api/user/check
-        public ActionResult<string> getCurrentUser()
+        public ActionResult<UserInformation> getCurrentUser()
         {
-            return Ok(_userService.getCurrentUser());
+            UserInformation user = _userService.getCurrentUser();
+
+            return Ok(user);
         }
 
         [AllowAnonymous]

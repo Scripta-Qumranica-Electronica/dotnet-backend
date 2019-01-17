@@ -19,7 +19,7 @@ namespace SQE.Backend.Services
     public interface IUserService
     {
         Task<UserInformation> AuthenticateAsync(string username, string password);
-        ActionResult<UserInformation> getCurrentUser();
+        UserInformation getCurrentUser();
         string getUserToken(string userName, string userId);
         string getCurrentUserId();
     }
@@ -77,7 +77,7 @@ namespace SQE.Backend.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public ActionResult<UserInformation> getCurrentUser()
+        public UserInformation getCurrentUser()
         {
             var user = new UserInformation
             {
