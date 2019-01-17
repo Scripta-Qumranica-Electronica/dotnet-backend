@@ -35,15 +35,13 @@ namespace SQE.Backend.DTOs
         public int id { get; set; }
         public string name { get; set; }
         public User owner { get; set; }
-        public Permission ownerPermission { get; set; }
+        public Permission permission { get; set; }
         public List<string> thumbnailUrls { get; set; }
         public List<Share> shares { get; set; }
 
-        public int numOfArtefacts { get; set; }
-        public int numOfColumns { get; set; }
-        public int numOfFragments { get; set; }
+        public int? numOfArtefacts { get; set; }
+        public int? numOfColsFrags { get; set; }
 
-        public bool locked { get; set; }
-        public DateTime? lastEdit { get; set; }
+        public bool? locked { get; set; }
     }
 }
