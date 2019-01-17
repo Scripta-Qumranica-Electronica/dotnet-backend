@@ -74,6 +74,8 @@ namespace sqe_dotnet_backend
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddTransient<IUserRepository, UserRepository>();
+
 
         }
 

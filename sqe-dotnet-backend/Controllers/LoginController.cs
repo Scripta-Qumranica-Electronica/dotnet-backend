@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using SQE.Backend.DTOs;
 using SQE.Backend.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SQE.Backend.DataAccess;
+using System.Threading.Tasks;
 
 namespace sqe_dotnet_backend.Controllers
 {
@@ -13,19 +14,18 @@ namespace sqe_dotnet_backend.Controllers
     public class UserController : ControllerBase
     {
         private IUserService _userService;
-        private IHttpContextAccessor _accessor;
 
-        public UserController(IUserService userServiceAuthenticate, IHttpContextAccessor accessor)
+        public UserController(IUserService userServiceAuthenticate)
         {
             _userService = userServiceAuthenticate;
-            _accessor = accessor;
         }
 
         [AllowAnonymous]
         [HttpPost("login")] // api/user/login
-        public IActionResult Authenticate([FromBody]UserInformation userParam)
+        public async Task<IActionResult> AuthenticateAsync([FromBody]UserInformation userParam)
         {
-            var user = _userService.Authenticate(userParam.Username, userParam.Password);
+
+            UserInformation user = await _userService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -37,7 +37,14 @@ namespace sqe_dotnet_backend.Controllers
         [HttpGet("check")] // api/user/check
         public ActionResult<string> getCurrentUser()
         {
-            return Ok(_accessor.HttpContext.User.Identity.Name);
+            return Ok(_userService.getCurrentUser());
+        }
+
+        [AllowAnonymous]
+        [HttpGet("userId")] // api/user/check
+        public ActionResult<string> getCurrentUserId()
+        {
+            return Ok(_userService.getCurrentUserId());
         }
 
     }
