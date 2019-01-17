@@ -43,18 +43,71 @@ namespace sqe_dotnet_backend.Controllers
 
         [Authorize]
         [HttpGet("versions/my")] // api/scroll/versions/all - return all of my scroll versions
-        public async Task<ActionResult<IEnumerable<ScrollVersion>>> ListMyScrllVersions()
+        public async Task<ActionResult<ListResult<ScrollVersion>>> ListMyScrollVersions()
         {
-            var userId = _userService.getCurrentUserId();
-            return new List<ScrollVersion>();
+            int userId = Int32.Parse(_userService.getCurrentUserId());
+
+            var scrollVersions = await _repo.ListMyScrollVersions(userId);
+            var result = scrollVersions.Select(svModel => CreateScrollVersionDTO(svModel));
+
+            return new ListResult<ScrollVersion>(result);
         }
 
         [Authorize]
         [HttpGet("versions/{id}")] // api/scroll/versions/<version-id>
-        public async Task<ActionResult<ScrollVersion>> GetScrollVersion(int id)
+        public async Task<ActionResult<ListResult<ScrollVersion>>> ListVersionsOfScroll(int id)
         {
-            var userId = _userService.getCurrentUserId();
-            return new ScrollVersion();
+            int userId = Int32.Parse(_userService.getCurrentUserId());
+
+            var scrollVersions = await _repo.ListVersionsOfScroll(id, userId);
+            var result = scrollVersions.Select(svModel => CreateScrollVersionDTO(svModel));
+
+            return new ListResult<ScrollVersion>(result);
+        }
+
+        private ScrollVersion CreateScrollVersionDTO(SQE.Backend.DataAccess.Models.ScrollVersion model)
+        {
+            List<Share> shares = null;
+
+            if (model.Sharing != null)
+            {
+                shares = model.Sharing.Select(sharingModel => new Share
+                {
+                    user = CreateUserDTO(sharingModel.User),
+                    permission = CreatePermissionDTO(sharingModel.Permission)
+                }).ToList();
+            }
+
+            return new ScrollVersion
+            {
+                id = model.Id,
+                name = model.Name,
+                owner = CreateUserDTO(model.Owner),
+                permission = CreatePermissionDTO(model.Permission),
+                thumbnailUrls = model.ThumbnailUrls,
+                shares = shares,
+                numOfArtefacts = model.NumOfArtefacts,
+                numOfColsFrags = model.NumOfColsFrags,
+                locked = model.Locked,
+            };
+        }
+
+        private User CreateUserDTO(SQE.Backend.DataAccess.Models.User model)
+        {
+            return new User
+            {
+                name = model.Name,
+                id = model.Id
+            };
+        }
+
+        private Permission CreatePermissionDTO(SQE.Backend.DataAccess.Models.Permission model)
+        {
+            return new Permission
+            {
+                canWrite = model.CanWrite,
+                canLock = model.CanLock,
+            };
         }
     }
 }

@@ -18,8 +18,8 @@ namespace SQE.Backend.Services
 {
     public interface IUserService
     {
-        Task<UserInformation> AuthenticateAsync(string username, string password);
-        UserInformation getCurrentUser();
+        Task<LoginResponse> AuthenticateAsync(string username, string password);
+        LoginResponse getCurrentUser();
         string getUserToken(string userName, string userId);
         string getCurrentUserId();
     }
@@ -40,21 +40,19 @@ namespace SQE.Backend.Services
         }
 
 
-        public async Task<UserInformation> AuthenticateAsync(string username, string password)
+        public async Task<LoginResponse> AuthenticateAsync(string username, string password)
         {
             var result = await _repo.login(username, password);
+
             if(result.UserId ==null || result.Username == null)
             {
                 return null;
             }
-            var user = new UserInformation { Username = result.Username, userId = result.UserId };
 
-            user.Token = getUserToken(user.Username, user.userId).ToString();
+            LoginResponse loginResponse = new LoginResponse { Username = result.Username, userId = result.UserId };
+            loginResponse.Token = getUserToken(loginResponse.Username, loginResponse.userId).ToString();
 
-            // remove password before returning
-            user.Password = null;
-
-            return user;
+            return loginResponse;
         }
 
         public string getUserToken(string userName, string userId)
@@ -77,9 +75,9 @@ namespace SQE.Backend.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public UserInformation getCurrentUser()
+        public LoginResponse getCurrentUser()
         {
-            var user = new UserInformation
+            LoginResponse user = new LoginResponse
             {
                 Username = _accessor.HttpContext.User.Identity.Name
 
@@ -107,5 +105,7 @@ namespace SQE.Backend.Services
             }
             return null;
         }
+
+   
     }
 }
