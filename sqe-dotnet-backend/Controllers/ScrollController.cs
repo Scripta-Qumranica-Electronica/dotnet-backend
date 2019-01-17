@@ -45,9 +45,9 @@ namespace sqe_dotnet_backend.Controllers
         [HttpGet("versions/my")] // api/scroll/versions/all - return all of my scroll versions
         public async Task<ActionResult<ListResult<ScrollVersion>>> ListMyScrollVersions()
         {
-            int userId = Int32.Parse(_userService.getCurrentUserId());
+            var user = _userService.GetCurrentUser();
 
-            var scrollVersions = await _repo.ListMyScrollVersions(userId);
+            var scrollVersions = await _repo.ListMyScrollVersions(user.userId);
             var result = scrollVersions.Select(svModel => CreateScrollVersionDTO(svModel));
 
             return new ListResult<ScrollVersion>(result);
@@ -57,9 +57,9 @@ namespace sqe_dotnet_backend.Controllers
         [HttpGet("versions/{id}")] // api/scroll/versions/<version-id>
         public async Task<ActionResult<ListResult<ScrollVersion>>> ListVersionsOfScroll(int id)
         {
-            int userId = Int32.Parse(_userService.getCurrentUserId());
+            var user = _userService.GetCurrentUser();
 
-            var scrollVersions = await _repo.ListVersionsOfScroll(id, userId);
+            var scrollVersions = await _repo.ListVersionsOfScroll(id, user.userId);
             var result = scrollVersions.Select(svModel => CreateScrollVersionDTO(svModel));
 
             return new ListResult<ScrollVersion>(result);

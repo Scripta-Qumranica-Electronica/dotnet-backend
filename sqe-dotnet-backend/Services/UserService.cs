@@ -19,9 +19,7 @@ namespace SQE.Backend.Services
     public interface IUserService
     {
         Task<LoginResponse> AuthenticateAsync(string username, string password);
-        LoginResponse getCurrentUser();
-        string getUserToken(string userName, string userId);
-        string getCurrentUserId();
+        LoginResponse GetCurrentUser();
     }
 
     public class UserService : IUserService
@@ -36,26 +34,23 @@ namespace SQE.Backend.Services
             _repo = userRepository;
             _appSettings = appSettings.Value;
             _accessor = accessor;
-
         }
 
 
         public async Task<LoginResponse> AuthenticateAsync(string username, string password)
         {
-            var result = await _repo.login(username, password);
+            var result = await _repo.GetUserByPassword(username, password);
 
-            if(result.UserId ==null || result.Username == null)
-            {
+            if (result == null)
                 return null;
-            }
 
-            LoginResponse loginResponse = new LoginResponse { Username = result.Username, userId = result.UserId };
-            loginResponse.Token = getUserToken(loginResponse.Username, loginResponse.userId).ToString();
+            LoginResponse loginResponse = new LoginResponse { username = result.Username, userId = result.UserId };
+            loginResponse.token = BuildUserToken(loginResponse.username, loginResponse.userId).ToString();
 
             return loginResponse;
         }
 
-        public string getUserToken(string userName, string userId)
+        private string BuildUserToken(string userName, int userId)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
@@ -66,7 +61,7 @@ namespace SQE.Backend.Services
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, userName),
-                    new Claim(ClaimTypes.NameIdentifier, userId)
+                    new Claim(ClaimTypes.NameIdentifier, userId.ToString())
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -75,23 +70,23 @@ namespace SQE.Backend.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public LoginResponse getCurrentUser()
+        public LoginResponse GetCurrentUser()
         {
             LoginResponse user = new LoginResponse
             {
-                Username = _accessor.HttpContext.User.Identity.Name
-
+                username = _accessor.HttpContext.User.Identity.Name
             };
-            var userId = getCurrentUserId();
+            var userId = GetCurrentUserId();
             if(userId != null)
             {
-                user.userId = userId.ToString();
+                user.userId = userId.Value;
             }
-            user.Token = getUserToken(user.Username, user.userId).ToString();
+            user.token = BuildUserToken(user.username, user.userId).ToString();
+
             return user;
         }
 
-        public string getCurrentUserId()
+        private int? GetCurrentUserId()
         {
             var identity = (ClaimsIdentity)_accessor.HttpContext.User.Identity;
             IEnumerable<Claim> claims = identity.Claims;
@@ -100,12 +95,10 @@ namespace SQE.Backend.Services
                 var splitted = claim.Type.Split("/");
                 if (splitted[splitted.Length - 1] == "nameidentifier")
                 {
-                    return claim.Value.ToString();
+                    return Int32.Parse(claim.Value);
                 }
             }
             return null;
         }
-
-   
     }
 }

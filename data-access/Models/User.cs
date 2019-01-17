@@ -7,9 +7,6 @@ namespace SQE.Backend.DataAccess.Models
     public class UserData
     {
         public string Username { get; set; }
-        public string UserId { get; set; }
-
-        
+        public int UserId { get; set; }
     }
-
 }

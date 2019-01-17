@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SQE.Backend.Access.RawModels
+namespace SQE.Backend.DataAccess.RawModels
 {
     internal interface IQueryResponse<T>
     {

@@ -5,23 +5,18 @@ using System.Text;
 
 namespace SQE.Backend.DataAccess.RawModels
 {
-    internal interface IQueryResponse<T>
+    internal class UserQueryResponse: IQueryResponse<UserData>
     {
-        T CreateModel();
-    }
-
-    internal class UserQuery: IQueryResponse<UserData>
-       {
-            public string user_name { get; set; }
-            public string user_id { get; set; }
+        public string user_name { get; set; }
+        public int user_id { get; set; }
 
         public UserData CreateModel()
+        {
+            return new UserData
             {
-                return new UserData
-                {
-                    Username = user_name,
-                    UserId = user_id
-                };
-            }
+                Username = user_name,
+                UserId = user_id
+            };
         }
+    }
 }

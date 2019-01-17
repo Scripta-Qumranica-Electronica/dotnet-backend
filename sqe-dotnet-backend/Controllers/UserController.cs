@@ -24,29 +24,20 @@ namespace sqe_dotnet_backend.Controllers
         [HttpPost("login")] // api/user/login
         public async Task<IActionResult> AuthenticateAsync([FromBody]LoginRequest userParam)
         {
-            LoginResponse user = await _userService.AuthenticateAsync(userParam.Username, userParam.Password);
+            LoginResponse user = await _userService.AuthenticateAsync(userParam.username, userParam.password);
       
             if (user == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return Unauthorized(new { message = "Username or password is incorrect" });
 
             return Ok(user);
         }
 
-        [AllowAnonymous]
         [HttpGet("check")] // api/user/check
-        public ActionResult<LoginResponse> getCurrentUser()
+        public ActionResult<LoginResponse> GetCurrentUser()
         {
-            LoginResponse user = _userService.getCurrentUser();
+            LoginResponse user = _userService.GetCurrentUser();
 
             return Ok(user);
         }
-
-        [AllowAnonymous]
-        [HttpGet("userId")] // api/user/check
-        public ActionResult<string> getCurrentUserId()
-        {
-            return Ok(_userService.getCurrentUserId());
-        }
-
     }
 }
